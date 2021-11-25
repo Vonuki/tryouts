@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Task List</title>
+    <link href="bootstrap.css" rel="stylesheet">
+</head>
+<body>
+  
+  <div style = "margin:auto; width:600px; border:3px solid green; padding: 10px;">
+        <div class="row">          
+              <div class="col-5 small">
+                <label for="newTask" class="h5">New Task Description:</label>
+              </div>
+              <div class="col-5 small">
+                <form>
+                  <input id="TaskDescription" type="text" class="form-control" >
+                </form>
+              </div>
+              <div class="col-2 small">
+                  <input id="addTask" type="button" class="btn btn-success" value ="Add" onClick ="AddTodo()" >
+              </div>
+        </div>
+       
+       
+        <div class="row" style="padding-top:30px;">
+          <div class="col-12 small">
+            <h5> ToDo List</h5> 
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 small">
+            <div id="todo_table"></div>
+          </div>        
+        </div>
+  </div>
+
+  
+ <script>
+   
+   //Load list of ToDos
+   function LoadToDo() {
+     
+     let ret = fetch('todo.php');
+	   ReadRespone(ret);
+   }
+   
+   function AddTodo(){  
+      let send_data = document.getElementById('TaskDescription').value ;
+     
+      let data_body = "add=" + send_data;
+      let ret = fetch("todo.php", { 
+	      method: "POST",
+        body: data_body,   
+	      headers:{"content-type": "application/x-www-form-urlencoded"} 
+	      });
+      document.getElementById('TaskDescription').value = "";
+      ReadRespone (ret);
+   }
+   
+   function DeleteTodo(id){  
+      let data_body = "delete=" + id;
+	    let ret = fetch("todo.php", { 
+	      method: "POST",
+        body: data_body,   
+	      headers:{"content-type": "application/x-www-form-urlencoded"} 
+	      });
+      document.getElementById('TaskDescription').value = "";
+      ReadRespone (ret);
+   }
+   
+   function ReadRespone(ret){
+     ret.then(
+        response => {
+          return response.text();
+        }
+      ).then(
+        data => {
+          result = JSON.parse(data);
+          
+          if(result!=null){
+            var welcome = document.getElementById('todo_table');
+
+            $table_string = "<table class='table'> <tr> <th> idTask </th> <th> Description </th> <th> Action </th></tr>";
+            result.forEach((element) => {
+              $table_string = $table_string 
+                  + "<tr> <td>" + element["idTask"] 
+                  +  "</td> <td>" + element['Description'] 
+                  + "</td> <td> <input type='button' class='btn btn-danger btn-sm' value ='Delete' onClick = 'DeleteTodo("+ element["idTask"] +")' >  </td> </tr>";
+            })
+
+            $table_string = $table_string + "</table>"
+            welcome.innerHTML = $table_string ; 
+          }
+        }
+      );
+   }
+  
+   window.addEventListener("load",LoadToDo());
+
+</script>
+  
+</body>
+</html>
+

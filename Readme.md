@@ -1,7 +1,6 @@
 ## Samples of codes
 
-### working with ajax
+### Simple AJAX ToDo list
+    Add tasks with AJAX and save in MySQL DB
 
-### something with JSON
-
-### somthin with complex figures
+### working with complex figures
